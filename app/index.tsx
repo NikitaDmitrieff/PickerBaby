@@ -5,7 +5,7 @@ import * as Haptics from 'expo-haptics';
 
 type Finger = { id: number; x: number; y: number };
 
-export default function TabOneScreen() {
+export default function Screen() {
   const { width, height } = useWindowDimensions();
   const fingersRef = useRef<Map<number, Finger>>(new Map());
   const [, force] = useState(0);
@@ -112,3 +112,5 @@ export default function TabOneScreen() {
     </View>
   );
 }
+
+
