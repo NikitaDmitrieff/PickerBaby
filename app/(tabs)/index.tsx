@@ -1,6 +1,9 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { View, Text, Pressable, useWindowDimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Canvas, Circle, Shadow, Group } from '@shopify/react-native-skia';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
 type Finger = { id: number; x: number; y: number };
@@ -77,8 +80,15 @@ export default function TabOneScreen() {
   const renderSet = locked ?? fingers;
 
   return (
-    <View className="flex-1 bg-black" {...viewProps}>
-      <Canvas style={{ position: 'absolute', inset: 0 }}>
+    <LinearGradient
+      colors={['#0f172a', '#1e293b']}
+      style={{ flex: 1 }}
+      {...viewProps}
+    >
+      <SafeAreaView className="flex-1">
+        <Text className="text-white text-4xl font-bold text-center mt-4">PickerBaby</Text>
+
+        <Canvas style={{ position: 'absolute', inset: 0 }}>
         {renderSet.map((f) => {
           const isWinner = f.id === winnerId;
           const r = isWinner ? 44 : 36;
@@ -91,24 +101,49 @@ export default function TabOneScreen() {
             </Group>
           );
         })}
-      </Canvas>
+        </Canvas>
 
-      <View className="absolute bottom-8 left-0 right-0 items-center gap-3">
-        <View className="flex-row gap-3">
-          <Pressable onPress={pickWinner} disabled={!!locked} className="px-6 py-3 rounded-2xl bg-white/90">
-            <Text className="text-black font-semibold">Pick</Text>
-          </Pressable>
-          <Pressable onPress={reset} className="px-6 py-3 rounded-2xl bg-white/20">
-            <Text className="text-white font-semibold">Reset</Text>
-          </Pressable>
+        <View className="absolute bottom-8 left-0 right-0 items-center gap-3">
+          <View className="flex-row gap-3">
+            <Pressable
+              onPress={pickWinner}
+              disabled={!!locked}
+              className="flex-row items-center px-6 py-3 rounded-full bg-white/90"
+            >
+              <Ionicons name="sparkles-outline" size={20} color="black" />
+              <Text className="text-black font-semibold ml-2">Pick</Text>
+            </Pressable>
+            <Pressable
+              onPress={reset}
+              className="flex-row items-center px-6 py-3 rounded-full bg-white/20"
+            >
+              <Ionicons name="refresh" size={20} color="white" />
+              <Text className="text-white font-semibold ml-2">Reset</Text>
+            </Pressable>
+          </View>
+
+          {!locked && (
+            <Text className="text-white/60 mt-1">Place fingers and tap Pick</Text>
+          )}
+
+          {!!locked && (
+            <Text className="text-white/80 mt-1">
+              Bottom-right finger was excluded •{' '}
+              {winnerId == null ? 'Need 2+ fingers' : 'Winner chosen'}
+            </Text>
+          )}
         </View>
 
-        {!!locked && (
-          <Text className="text-white/80 mt-1">
-            Bottom-right finger was excluded • {winnerId == null ? 'Need 2+ fingers' : 'Winner chosen'}
-          </Text>
+        {winnerId != null && (
+          <View className="absolute inset-0 items-center justify-center" pointerEvents="none">
+            <View className="bg-black/60 px-6 py-4 rounded-3xl">
+              <Text className="text-white text-3xl font-bold">
+                🎉 Winner!
+              </Text>
+            </View>
+          </View>
         )}
-      </View>
-    </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
